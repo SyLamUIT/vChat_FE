@@ -56,6 +56,7 @@ export class HomeComponent implements OnInit {
     contact: null,
     groupCall: null,
   };
+  incomingCallUrl: string = "";
 
   constructor(
     private authenticationService: AuthenticationService,
@@ -80,7 +81,7 @@ export class HomeComponent implements OnInit {
     });
     // lắng nghe cuôc gọi đến => xử lý
     this.signalRService.hubConnection.on('callHubListener', (data) => {
-      console.log('callHubListener')
+      console.log('callHubListener',data)
       this.openModalCall(data);
     });
   }
@@ -226,19 +227,25 @@ export class HomeComponent implements OnInit {
   //#endregion
 
   openModalCall(url: any) {
-    if (confirm("Có cuộc gọi đến")) {
-      this.callService
-        .joinVideoCall($("#inComingCallIframe").attr("src"))
-        .subscribe((resp: any) => {
-          $("#modalInComingCall").modal();
-          $("#inComingCallIframe").attr("src", url)
-        }, (error) => {
-          console.log(error)
-        })
-    }
+    this.incomingCallUrl = url;  
+    console.log('openModalCall', url);
+    $("#incomingCallModal").modal('show'); 
+  }
+  
+  acceptCall() {
+    this.callService
+      .joinVideoCall(this.incomingCallUrl)
+      .subscribe((resp: any) => {
+        $("#incomingCallModal").modal('hide');
+        $("#modalInComingCall").modal();
+        $("#inComingCallIframe").attr("src", this.incomingCallUrl);
+      }, (error) => {
+        console.log(error);
+      });
   }
 
   rejectCall() {
+    $("#incomingCallModal").modal('hide');
     $("#modalInComingCall").modal("hide");
     $("#inComingCallIframe").attr("src", "");
     this.listCall.getData();
