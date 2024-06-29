@@ -39,4 +39,8 @@ export class ContactDetailComponent implements OnInit {
         console.log(error)
       });
   }
+
+  deleteContact() {
+    
+  }
 }
