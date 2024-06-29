@@ -81,8 +81,10 @@ export class HomeComponent implements OnInit {
     });
     // lắng nghe cuôc gọi đến => xử lý
     this.signalRService.hubConnection.on('callHubListener', (data) => {
-      console.log('callHubListener',data)
-      this.openModalCall(data);
+      console.log('callHubListener', data)
+      if (typeof data === "string")
+        this.openModalCall(data);
+      else this.openModalCall(data.url);
     });
   }
 
@@ -227,11 +229,11 @@ export class HomeComponent implements OnInit {
   //#endregion
 
   openModalCall(url: any) {
-    this.incomingCallUrl = url;  
+    this.incomingCallUrl = url;
     console.log('openModalCall', url);
-    $("#incomingCallModal").modal('show'); 
+    $("#incomingCallModal").modal('show');
   }
-  
+
   acceptCall() {
     this.callService
       .joinVideoCall(this.incomingCallUrl)

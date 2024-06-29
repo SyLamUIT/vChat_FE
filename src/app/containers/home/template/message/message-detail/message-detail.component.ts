@@ -257,7 +257,7 @@ export class MessageDetailComponent implements OnInit {
         this.callService.callGroup(this.groupInfo.Code, connectionId)
           .subscribe((resp: any) => {
             let data = JSON.parse(resp["data"]);
-            $("#outgoingCallIframe").attr("src", data.url);
+            $("#outgoingCallIframe").attr("src", data);
             $("#modalOutgoingCall").modal();
             console.log('callVideo', data)
           }, (error) => {
