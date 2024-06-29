@@ -57,6 +57,7 @@ export class HomeComponent implements OnInit {
     groupCall: null,
   };
   incomingCallUrl: string = "";
+  incomingCallFromString: string = "";
 
   constructor(
     private authenticationService: AuthenticationService,
@@ -82,9 +83,7 @@ export class HomeComponent implements OnInit {
     // lắng nghe cuôc gọi đến => xử lý
     this.signalRService.hubConnection.on('callHubListener', (data) => {
       console.log('callHubListener', data)
-      if (typeof data === "string")
-        this.openModalCall(data);
-      else this.openModalCall(data.url);
+      this.openModalCall(data);
     });
   }
 
@@ -228,9 +227,13 @@ export class HomeComponent implements OnInit {
 
   //#endregion
 
-  openModalCall(url: any) {
-    this.incomingCallUrl = url;
-    console.log('openModalCall', url);
+  openModalCall(data: any) {
+    this.incomingCallUrl = data.url;
+    console.log('openModalCall', data);
+    if (data.incomingCallFrom.type == "single")
+      this.incomingCallFromString = data.incomingCallFrom.userName;
+    else
+      this.incomingCallFromString = `nhóm ${data.incomingCallFrom.groupName}`;
     $("#incomingCallModal").modal('show');
   }
 
