@@ -49,14 +49,14 @@ export class MessageDetailComponent implements OnInit {
     private spinner: NgxSpinnerService,
     private signalRService: SignalRService) { }
 
-    ngOnInit() {
-      this.currentUser = this.authenticationService.currentUserValue;
-      this.signalRService.hubConnection.on('messageHubListener', (data) => {
-        console.log('messageHubListener')
-        this.getMessage();
-      });
-      this.getProfile();
-    }
+  ngOnInit() {
+    this.currentUser = this.authenticationService.currentUserValue;
+    this.signalRService.hubConnection.on('messageHubListener', (data) => {
+      console.log('messageHubListener')
+      this.getMessage();
+    });
+    this.getProfile();
+  }
 
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -252,15 +252,26 @@ export class MessageDetailComponent implements OnInit {
   }
 
   callVideo() {
-    this.callService.call(this.groupInfo.Code)
-      .subscribe((resp: any) => {
-        let data = JSON.parse(resp["data"]);
-        $("#outgoingCallIframe").attr("src", data);
-        $("#modalOutgoingCall").modal();
-        console.log('callVideo', data)
-      }, (error) => {
-        console.log(error)
-      });
+    if (this.groupInfo.IsGroup)
+      this.callService.callGroup(this.groupInfo.Code)
+        .subscribe((resp: any) => {
+          let data = JSON.parse(resp["data"]);
+          $("#outgoingCallIframe").attr("src", data);
+          $("#modalOutgoingCall").modal();
+          console.log('callVideo', data)
+        }, (error) => {
+          console.log(error)
+        });
+    else
+      this.callService.call(this.groupInfo.Code)
+        .subscribe((resp: any) => {
+          let data = JSON.parse(resp["data"]);
+          $("#outgoingCallIframe").attr("src", data);
+          $("#modalOutgoingCall").modal();
+          console.log('callVideo', data)
+        }, (error) => {
+          console.log(error)
+        });
   }
 
   //#region sửa thành viên nhóm chat

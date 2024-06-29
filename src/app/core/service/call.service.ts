@@ -20,6 +20,10 @@ export class CallService {
     return this.http.get(AppRoutingApi.Call + "/" + callTo);
   }
 
+  callGroup(callTo: string){
+    return this.http.get(AppRoutingApi.Call + "/group/" + callTo);
+  }
+
   joinVideoCall(url: string) {
     return this.http.get(AppRoutingApi.JoinVideoCall, {
       params: {
