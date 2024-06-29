@@ -26,4 +26,5 @@ export class AppRoutingApi {
     static GetContact = environment.apiUrl + "users/contacts";
     static SearchContact = environment.apiUrl + "users/contacts/search";
     static AddContact = environment.apiUrl + "users/contacts";
+    static DeleteContact = environment.apiUrl + "users/contacts";
 }

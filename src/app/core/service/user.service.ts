@@ -32,4 +32,8 @@ export class UserService {
   addContact(contact: User) {
     return this.http.post(AppRoutingApi.AddContact, contact);
   }
+
+  deleteContact(contact: User) {
+    return this.http.put(AppRoutingApi.DeleteContact, contact);
+  }
 }

@@ -1,5 +1,6 @@
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { CallService } from 'src/app/core/service/call.service';
+import { UserService } from 'src/app/core/service/user.service';
 declare const $: any;
 
 @Component({
@@ -12,7 +13,8 @@ export class ContactDetailComponent implements OnInit {
 
   toggleTabChat: boolean = false;
   constructor(
-    private callService: CallService
+    private callService: CallService,
+    private userService: UserService
   ) { }
 
   ngOnInit() {
@@ -41,6 +43,10 @@ export class ContactDetailComponent implements OnInit {
   }
 
   deleteContact() {
-    
+    this.userService.deleteContact(this.contact).subscribe((resp: any) => {
+      window.location.reload()
+    }, (error) => {
+      console.log(error)
+    });
   }
 }
