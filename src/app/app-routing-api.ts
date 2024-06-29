@@ -13,6 +13,7 @@ export class AppRoutingApi {
     static GetMessageByGroup = environment.apiUrl + "chatBoards/get-message-by-group";
     static GetMessageByContact = environment.apiUrl + "chatBoards/get-message-by-contact";
     static UpdateGroupAvatar = environment.apiUrl + "chatBoards/update-group-avatar";
+    static UpdateGroup = environment.apiUrl + "chatBoards/groups/user";
 
     static GetCallHistory = environment.apiUrl + "calls/get-history";
     static GetCallHistoryById = environment.apiUrl + "calls/get-history";

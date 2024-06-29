@@ -14,4 +14,5 @@ export interface User {
     Token: string;
 
     fieldStamp1: boolean;
+    fieldStamp2: boolean;
 }

@@ -54,4 +54,8 @@ export class ChatBoardService {
   updateGroupAvatar(group: any) {
     return this.http.put(AppRoutingApi.UpdateGroupAvatar, group);
   }
+
+  updateGroup(group: any) {
+    return this.http.put(AppRoutingApi.UpdateGroup, group);
+  }
 }

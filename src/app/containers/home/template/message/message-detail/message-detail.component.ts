@@ -2,12 +2,16 @@ import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { Group } from 'src/app/core/model/group';
 import { Message } from 'src/app/core/model/message';
 import { User } from 'src/app/core/model/user';
+import { ToastrService } from 'ngx-toastr';
 import { AuthenticationService } from 'src/app/core/service/authentication.service';
 import { ChatBoardService } from 'src/app/core/service/chat-board.service';
 import { saveAs } from 'file-saver';
 import { SignalRService } from 'src/app/core/service/signal-r.service';
 import { DataHelper } from 'src/app/core/util/data-helper';
 import { CallService } from 'src/app/core/service/call.service';
+import { UserService } from 'src/app/core/service/user.service';
+import { finalize } from 'rxjs/operators';
+import { NgxSpinnerService } from 'ngx-spinner';
 declare const $: any;
 
 @Component({
@@ -24,25 +28,56 @@ export class MessageDetailComponent implements OnInit {
   textMessage: string = "";
   groupInfo: any = null;
 
+  filter = {
+    keySearch: "",
+    groupName: "",
+    group: null,
+    contact: null,
+    groupCall: null,
+  };
+
+  memberInNewGroup: User[] = [];
+  userProfile: any;
+  showUpdateGroup: boolean | undefined;
+
   constructor(
     private callService: CallService,
     private chatBoardService: ChatBoardService,
+    private userService: UserService,
     private authenticationService: AuthenticationService,
+    private toastr: ToastrService,
+    private spinner: NgxSpinnerService,
     private signalRService: SignalRService) { }
 
-  ngOnInit() {
-    this.currentUser = this.authenticationService.currentUserValue;
-    this.signalRService.hubConnection.on('messageHubListener', (data) => {
-      console.log('messageHubListener')
-      this.getMessage();
-    });
-  }
+    ngOnInit() {
+      this.currentUser = this.authenticationService.currentUserValue;
+      this.signalRService.hubConnection.on('messageHubListener', (data) => {
+        console.log('messageHubListener')
+        this.getMessage();
+      });
+      this.getProfile();
+    }
 
 
   ngOnChanges(changes: SimpleChanges): void {
     this.getMessage();
     this.getChatBoardInfo();
     $(".main-box-chat").removeClass("box-contact-info-opened");
+  }
+
+  getProfile() {
+    this.spinner.show();
+    this.userService.getProfile()
+      .pipe(
+        finalize(() => {
+          this.spinner.hide();
+        })
+      )
+      .subscribe((resp: any) => {
+        this.userProfile = JSON.parse(resp["data"]);
+      }, (error) => {
+        console.log(error)
+      })
   }
 
   getChatBoardInfo() {
@@ -86,6 +121,10 @@ export class MessageDetailComponent implements OnInit {
       $(".main-box-chat").removeClass("box-contact-info-opened");
     }
     else {
+      if (this.groupInfo && this.groupInfo.IsGroup && this.groupInfo.CreatedBy == this.userProfile.Code)
+        this.showUpdateGroup = true;
+      else
+        this.showUpdateGroup = false;
       $(".main-box-chat").addClass("box-contact-info-opened");
     }
   }
@@ -223,4 +262,58 @@ export class MessageDetailComponent implements OnInit {
         console.log(error)
       });
   }
+
+  //#region sửa thành viên nhóm chat
+
+  openModalUpdateGroup() {
+    this.filter.groupName = "";
+    this.userService.getContact()
+      .subscribe((resp: any) => {
+        this.memberInNewGroup = JSON.parse(resp["data"]);
+        this.memberInNewGroup.forEach(x => {
+          if (x.Code == this.userProfile.Code) {
+            x.fieldStamp2 = true
+          }
+          x.fieldStamp1 = false
+        });
+        this.groupInfo.Users.forEach((x: { Code: string; }) => {
+          let user = this.memberInNewGroup.find(m => m.Code == x.Code);
+          if (user)
+            user.fieldStamp1 = true;
+        })
+        $("#modalUpdateGroup").modal();
+      }, (error) => {
+        console.log(error)
+      })
+  }
+
+  addMemberToGroup(member: User) {
+    member.fieldStamp1 = true;
+  }
+
+  removeMemberToGroup(member: User) {
+    member.fieldStamp1 = false;
+  }
+
+  submitUpdateGroup() {
+
+    if (this.memberInNewGroup.filter(x => x.fieldStamp1).length == 0) {
+      this.toastr.error("Danh sách thành viên không được để trống");
+      return;
+    }
+
+    this.chatBoardService.updateGroup({
+      Code: this.groupInfo.Code,
+      Users: this.memberInNewGroup.filter(x => x.fieldStamp1)
+    })
+      .subscribe((resp: any) => {
+        this.toastr.success("Cập nhật thành công")
+        $("#modalUpdateGroup").modal("hide");
+        this.getChatBoardInfo();
+      }, (error) => {
+        console.log(error)
+      })
+  }
+
+  //#endregion
 }

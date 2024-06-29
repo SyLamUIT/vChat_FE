@@ -143,6 +143,9 @@
                                 </li>
                             </ul>
                         </div>
+                        <div class="mt-2 text-center" *ngIf="showUpdateGroup">
+                            <button (click)="openModalUpdateGroup()">Sửa thành viên nhóm</button>
+                        </div>
                     </div>
                 </ng-container>
                 <ng-container *ngIf="!groupInfo.IsGroup">
@@ -181,6 +184,66 @@
                     </div>
                 </ng-container>
             </ng-container>
+        </div>        
+    </div>
+</div>
+
+<div class="modal fade" id="modalUpdateGroup">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                <h5 class="modal-title">Sửa thành viên nhóm</h5>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div>
+                            <div class="mb-2">
+                                <small><u>Thành viên</u></small>
+                            </div>
+                            <ng-container *ngFor="let member of memberInNewGroup">
+                                <div *ngIf="member.fieldStamp1 && !member.fieldStamp2" class="box-member-in-group">
+                                    <img [src]="member.Avatar | pipeHostFile">
+                                    <span (click)="removeMemberToGroup(member)" class="remove-member">X</span>
+                                </div>
+                            </ng-container>
+                        </div>
+                        <div style="clear: both;margin-top: 14px;overflow: hidden;">
+                            <hr>
+                        </div>
+                        <div class="list-contact-adding">
+                            <ul class="list-unstyled">
+                                <li *ngFor="let member of memberInNewGroup">
+                                    <div *ngIf="!member.fieldStamp1 && !member.fieldStamp2" class="contacts">
+                                        <div class="contacts-avatar">
+                                            <img [src]="member.Avatar | pipeHostFile" alt="">
+                                            <span>{{member.FullName}}</span>
+                                        </div>
+                                        <div class="contacts-control">
+                                            <div (click)="addMemberToGroup(member)" class="contacts-control-sendmess">
+                                                <i class="mdi mdi-plus"></i>
+                                            </div>
+                                           </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="text-center">
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">
+                        Hủy
+                    </button>
+                    <button (click)="submitUpdateGroup()" type="button" class="btn btn-primary btn-sm">
+                        Sửa thành viên nhóm
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 </div>
