@@ -252,16 +252,19 @@ export class MessageDetailComponent implements OnInit {
   }
 
   callVideo() {
-    if (this.groupInfo.IsGroup)
-      this.callService.callGroup(this.groupInfo.Code)
-        .subscribe((resp: any) => {
-          let data = JSON.parse(resp["data"]);
-          $("#outgoingCallIframe").attr("src", data.url);
-          $("#modalOutgoingCall").modal();
-          console.log('callVideo', data)
-        }, (error) => {
-          console.log(error)
-        });
+    if (this.groupInfo.IsGroup) {
+      this.signalRService.hubConnection.invoke("GetConnectionId").then((connectionId) => {
+        this.callService.callGroup(this.groupInfo.Code, connectionId)
+          .subscribe((resp: any) => {
+            let data = JSON.parse(resp["data"]);
+            $("#outgoingCallIframe").attr("src", data.url);
+            $("#modalOutgoingCall").modal();
+            console.log('callVideo', data)
+          }, (error) => {
+            console.log(error)
+          });
+      });
+    }
     else
       this.callService.call(this.groupInfo.Code)
         .subscribe((resp: any) => {

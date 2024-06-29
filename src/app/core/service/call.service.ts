@@ -20,8 +20,8 @@ export class CallService {
     return this.http.get(AppRoutingApi.Call + "/" + callTo);
   }
 
-  callGroup(callTo: string){
-    return this.http.get(AppRoutingApi.Call + "/group/" + callTo);
+  callGroup(callTo: string, connectionId: string) {
+    return this.http.get(AppRoutingApi.Call + "/group/" + callTo + "?connectionId=" + connectionId);
   }
 
   joinVideoCall(url: string) {
